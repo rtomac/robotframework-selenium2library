@@ -22,7 +22,7 @@ from robot.utils import plural_or_not, is_truthy
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webelement import WebElement
-
+from selenium.common.exceptions import MoveTargetOutOfBoundsException
 from SeleniumLibrary.base import LibraryComponent, keyword
 from SeleniumLibrary.errors import ElementNotFound
 from SeleniumLibrary.utils.types import type_converter
@@ -747,7 +747,11 @@ newDiv.parentNode.style.overflow = 'hidden';
         element = self.find_element(locator)
         # _unwrap_eventfiring_element can be removed when minimum required Selenium is 4.0 or greater.
         element = _unwrap_eventfiring_element(element)
-        ActionChains(self.driver).move_to_element(element).perform()
+        try:
+            ActionChains(self.driver).move_to_element(element).perform()
+        except MoveTargetOutOfBoundsException as e:
+            self.debug(f"Move to element with error: {e}.")
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
 
     @keyword
     def drag_and_drop(
