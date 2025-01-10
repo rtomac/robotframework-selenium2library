@@ -258,6 +258,29 @@ class WaitingKeywords(LibraryComponent):
         )
 
     @keyword
+    def wait_until_page_contains_any_of_elements(
+        self,
+        locators: list[Union[WebElement, None, str]],
+        timeout: Optional[timedelta] = None,
+        error: Optional[str] = None,
+    ):
+        """Waits until any of the element locators in ``locators`` appears on the current page.
+
+        Fails if ``timeout`` expires before the element appears. See
+        the `Timeouts` section for more information about using timeouts and
+        their default value and the `Locating elements` section for details
+        about the locator syntax.
+
+        ``error`` can be used to override the default error message.
+        """
+        return self._wait_until(
+            lambda: any([self.find_element(locator, required=False) for locator in locators]),
+            f"Elements did not appear in <TIMEOUT>: \n '{locators}'",
+            timeout,
+            error,
+        )
+    
+    @keyword
     def wait_until_page_does_not_contain_element(
         self,
         locator: Union[WebElement, str],
