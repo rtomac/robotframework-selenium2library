@@ -17,7 +17,7 @@
 import os
 from typing import Optional, Union
 
-from robot.libraries.BuiltIn import BuiltIn
+from robot.libraries.BuiltIn import BuiltIn, RobotNotRunningError
 from selenium.webdriver.remote.webelement import WebElement
 
 from SeleniumLibrary.base import LibraryComponent, keyword
@@ -504,11 +504,17 @@ class FormElementKeywords(LibraryComponent):
         element = self.find_element(locator)
         if clear:
             element.clear()
+
         if disable_log:
-            self.info("Temporally setting log level to: NONE")
-            previous_level = BuiltIn().set_log_level("NONE")
+            try:
+                self.info("Temporally setting log level to: NONE")
+                previous_level = BuiltIn().set_log_level("NONE")
+            except RobotNotRunningError:
+                self.info('RF log levels not available when RF is not running.')
+
         try:
             element.send_keys(text)
         finally:
-            if disable_log:
+            if disable_log and 'previous_level' in locals():
                 BuiltIn().set_log_level(previous_level)
+
