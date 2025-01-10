@@ -417,6 +417,106 @@ class WaitingKeywords(LibraryComponent):
             error,
         )
 
+    @keyword
+    def wait_until_textarea_contains(
+        self,
+        locator: Union[WebElement, None, str],
+        text: str,
+        timeout: Optional[timedelta] = None,
+        message: Optional[str] = None,
+    ):
+        """Waits until the textarea ``locator`` contains ``text``.
+
+        Fails if ``timeout`` expires before the text appears. See
+        the `Timeouts` section for more information about using timeouts and
+        their default value and the `Locating elements` section for details
+        about the locator syntax.
+
+        The ``message`` argument can be used to override the default error
+        message.
+        """
+        self._wait_until(
+            lambda: text in self._get_value(locator, "text area"),
+            f"Textarea '{locator}' did not get text '{text}' in <TIMEOUT>.",
+            timeout,
+            message,
+        )
+
+    @keyword
+    def wait_until_textarea_does_not_contain(
+        self,
+        locator: Union[WebElement, None, str],
+        text: str,
+        timeout: Optional[timedelta] = None,
+        message: Optional[str] = None,
+    ):
+        """Waits until the textarea ``locator`` does not contain ``text``.
+
+        Fails if ``timeout`` expires before the text disappears. See
+        the `Timeouts` section for more information about using timeouts and
+        their default value and the `Locating elements` section for details
+        about the locator syntax.
+
+        The ``message`` argument can be used to override the default error
+        message.
+        """
+        self._wait_until(
+            lambda: text not in self._get_value(locator, "text area"),
+            f"Textarea '{locator}' still had text '{text}' after <TIMEOUT>.",
+            timeout,
+            message,
+        )
+
+    @keyword
+    def wait_until_textarea_value_is(
+        self,
+        locator: Union[WebElement, None, str],
+        text: str,
+        timeout: Optional[timedelta] = None,
+        message: Optional[str] = None,
+    ):
+        """Waits until the textarea ``locator`` has exactly text ``text``.
+
+        Fails if ``timeout`` expires before the text appears. See
+        the `Timeouts` section for more information about using timeouts and
+        their default value and the `Locating elements` section for details
+        about the locator syntax.
+
+        The ``message`` argument can be used to override the default error
+        message.
+        """
+        self._wait_until(
+            lambda: text == self._get_value(locator, "text area"),
+            f"Textarea '{locator}' did not get text '{text}' in <TIMEOUT>.",
+            timeout,
+            message,
+        )
+
+    @keyword
+    def wait_until_textarea_value_is_not(
+        self,
+        locator: Union[WebElement, None, str],
+        text: str,
+        timeout: Optional[timedelta] = None,
+        message: Optional[str] = None,
+    ):
+        """Waits until the textarea ``locator`` does not has exactly text ``text``.
+
+        Fails if ``timeout`` expires before the text appears. See
+        the `Timeouts` section for more information about using timeouts and
+        their default value and the `Locating elements` section for details
+        about the locator syntax.
+
+        The ``message`` argument can be used to override the default error
+        message.
+        """
+        self._wait_until(
+            lambda: text != self._get_value(locator, "text area"),
+            f"Textarea '{locator}' still had text '{text}' in <TIMEOUT>.",
+            timeout,
+            message,
+        )
+
     def _wait_until(self, condition, error, timeout=None, custom_error=None):
         timeout = self.get_timeout(timeout)
         if custom_error is None:
@@ -441,3 +541,6 @@ class WaitingKeywords(LibraryComponent):
                 not_found = None
             time.sleep(0.2)
         raise AssertionError(not_found or error)
+
+    def _get_value(self, locator, tag):
+        return self.find_element(locator, tag).get_attribute("value")
