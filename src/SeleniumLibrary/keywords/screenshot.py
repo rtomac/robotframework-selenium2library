@@ -89,7 +89,7 @@ class ScreenshotKeywords(LibraryComponent):
         format string syntax].
 
         An absolute path to the created screenshot file is returned or if
-        ``filename``  equals to EMBED, word `EMBED` is returned.
+        ``filename``  equals to EMBED, base64 image is returned.
 
         Support for EMBED is new in SeleniumLibrary 4.2
 
@@ -126,7 +126,7 @@ class ScreenshotKeywords(LibraryComponent):
     def _capture_page_screen_to_log(self):
         screenshot_as_base64 = self.driver.get_screenshot_as_base64()
         self._embed_to_log_as_base64(screenshot_as_base64, 800)
-        return EMBED
+        return screenshot_as_base64
 
     @keyword
     def capture_element_screenshot(
@@ -173,7 +173,7 @@ class ScreenshotKeywords(LibraryComponent):
 
     def _capture_element_screen_to_log(self, element):
         self._embed_to_log_as_base64(element.screenshot_as_base64, 400)
-        return EMBED
+        return element.screenshot_as_base64
 
     @property
     def _screenshot_root_directory(self):
